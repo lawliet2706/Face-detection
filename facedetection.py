@@ -6,22 +6,10 @@ from mtcnn import MTCNN
 import cv2
 from PIL import Image, ImageEnhance,ImageDraw, ImageFont
 
-
-names = []
-for dirname, _, filenames in os.walk('/kaggle/input/testss'):
-    for filename in filenames:
-        names.append(str(os.path.join(dirname, filename)))
-        print(os.path.join(dirname, filename))
-
-detector = MTCNN()
-
-def find_faces(names:list, mtcnn_detector,dimensions : tuple = (256,256,3),conf_thresh:float = 0.98):
+def find_faces(names:list, mtcnn_detector, margin = 0.3,dimensions: tuple = (256,256,3),conf_thresh:float = 0.98):
     """
-    conf_thresh: Allows to manipulate the threshold value, so we can filter out the faces with low
-                 confidence levels
-
     names : input image we want to perform face detection on. Shout be of the format:
-            dirname + image_name ('/kaggle/input/testss/54994.png')
+            dirname + image_name
 
     mtcnn_detector : Allows to perform MTCNN Detection ->
                         a) Detection of faces (with the confidence probability)
@@ -37,19 +25,23 @@ def find_faces(names:list, mtcnn_detector,dimensions : tuple = (256,256,3),conf_
                                     overall_height : height * int(np.ceil(faces/num_faces)), where faces is the total
                                     number of faces detected by our detector.
                                     So, we get overall_width by overall_height contact sheet.
+    conf_thresh: Allows to manipulate the threshold value, so we can filter out the faces with low
+                 confidence levels
+
+    margin: Allows to manipulate the margin between the boxes ,the output of the detect_faces(img), and the frame?
+                1. setting it to 0 will return the picture of the face
+                2. setting it to large value will give an error
+
     """
     width,height,num_faces = dimensions
-
     if type(names) == list:
         contact_sheets = []
         for img_name in names:
             # read the image and convert it from BGR to RGB
             img = cv2.cvtColor(cv2.imread(img_name), cv2.COLOR_BGR2RGB)
             pil_img=Image.fromarray(img)
-
             #detect faces
             boxes = mtcnn_detector.detect_faces(img)
-
             faces = []
             conf = []
             thresh = conf_thresh
@@ -62,7 +54,7 @@ def find_faces(names:list, mtcnn_detector,dimensions : tuple = (256,256,3),conf_
             faces_in_each = []
 
             for x,y,w,h in faces:
-                cropped = pil_img.crop((x-0.3*w,y-0.3*h,x+w+0.3*w,y+h+0.3*h)).resize((width,height))
+                cropped = pil_img.crop((x-margin*w,y-margin*h,x+w+margin*w,y+h+margin*h)).resize((width,height))
                 d = ImageDraw.Draw(cropped)
                 s = str('Confidence level: ' + str(conf[i]))
                 d.text((30,30), s, fill=(255,255,0))
@@ -109,7 +101,7 @@ def find_faces(names:list, mtcnn_detector,dimensions : tuple = (256,256,3),conf_
         i = 0
         faces_in_each = []
         for x,y,w,h in faces:
-            cropped = pil_img.crop((x-0.3*w,y-0.3*h,x+w+0.3*w,y+h+0.3*h)).resize((width,height))
+            cropped = pil_img.crop((x-margin*w,y-margin*h,x+w+margin*w,y+h+margin*h)).resize((width,height))
             d = ImageDraw.Draw(cropped)
             s = str('Confidence level: ' + str(conf[i]))
             d.text((30,30), s, fill=(255,255,0))
@@ -138,6 +130,3 @@ def find_faces(names:list, mtcnn_detector,dimensions : tuple = (256,256,3),conf_
         else:
             display((pil_img).resize((width*num_faces,width*num_faces)))
         return contact_sheet
-
-a = find_faces(names[5],detector)
-display(a)
