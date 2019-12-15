@@ -28,15 +28,11 @@ or with `conda`
 
 Note that `tensorflow-gpu` version can be used instead if a GPU device is available on the system, which will speedup the results.
 
-## USAGE
-
-.. code:: python
-
+## USAGE 
     >>>import cv2
     >>>from facedetection import find_faces
     >>>from mtcnn import MTCNN
     >>>from PIL import Image, ImageEnhance,ImageDraw, ImageFont
-
     detector = MTCNN()
 
     image = 'hoomens.jpg'
@@ -45,7 +41,7 @@ Note that `tensorflow-gpu` version can be used instead if a GPU device is availa
     for img in result:
         img.show()
 
-The output is just a image with faces detected by our face detector.
+The output is an image with faces detected by our face detector.
 
 ## Deployment
 
