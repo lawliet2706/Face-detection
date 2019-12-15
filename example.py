@@ -5,6 +5,8 @@ from PIL import Image, ImageEnhance,ImageDraw, ImageFont
 
 detector = MTCNN()
 
-image = 'hoomens.jpg'
+image = ['hoomens.jpg','hoomens.jpg','hoomens.jpg']
 
-result.show()
+result = find_faces(image,detector)
+for img in result:
+    img.show()

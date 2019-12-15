@@ -66,19 +66,19 @@ def find_faces(names, mtcnn_detector, margin = 0.3,dimensions: tuple = (256,256,
                 faces_in_each.append(cropped)
                 i+=1
 
-             contact_sheet = Image.new(pil_img.mode, (width*num_faces,height*int(np.ceil(len(faces_in_each)/num_faces))))
-             #contact sheet modification to display each iteration's result
-             x = 0
-             y = 0
+            contact_sheet = Image.new(pil_img.mode, (width*num_faces,height*int(np.ceil(len(faces_in_each)/num_faces))))
+            #contact sheet modification to display each iteration's result
+            x = 0
+            y = 0
                 
-             for face in faces_in_each:
-                 face.thumbnail((width,height))
-                 contact_sheet.paste(face, (x, y))
-                 if x+width == contact_sheet.width:
-                     x=0
-                     y=y+height
-                 else:
-                     x=x+width
+            for face in faces_in_each:
+                face.thumbnail((width,height))
+                contact_sheet.paste(face, (x, y))
+                if x+width == contact_sheet.width:
+                    x=0
+                    y=y+height
+                else:
+                    x=x+width
             contact_sheets.append(contact_sheet)
         return contact_sheets
     else:
@@ -95,7 +95,7 @@ def find_faces(names, mtcnn_detector, margin = 0.3,dimensions: tuple = (256,256,
                 faces.append(face['box'])
                 conf.append(face['confidence'])
         if not faces:
-             contact_sheets.append(Image.new(pil_img.mode, (width*num_faces,height*int(np.ceil(1/num_faces)))))    
+            return Image.new(pil_img.mode, (width*num_faces,height*int(np.ceil(1/num_faces))))    
         i = 0
         faces_in_each = []
         for x,y,w,h in faces:
