@@ -28,29 +28,28 @@ or with `conda`
 
 Note that `tensorflow-gpu` version can be used instead if a GPU device is available on the system, which will speedup the results.
 
-## Running the tests
+## USAGE
 
-Explain how to run the automated tests for this system
+.. code:: python
 
-### Break down into end to end tests
+    >>>import cv2
+    >>>from facedetection import find_faces
+    >>>from mtcnn import MTCNN
+    >>>from PIL import Image, ImageEnhance,ImageDraw, ImageFont
 
-Explain what these tests test and why
+    detector = MTCNN()
 
-```
-Give an example
-```
+    image = 'hoomens.jpg'
+    result = find_faces(image,detector)
 
-### And coding style tests
+    for img in result:
+        img.show()
 
-Explain what these tests test and why
-
-```
-Give an example
-```
+The output is just a image with faces detected by our face detector.
 
 ## Deployment
 
-Add additional notes about how to deploy this on a live system
+I used conda environment, couldn't get it to work with VisualStudio
 
 
 ## Authors
