@@ -2,11 +2,11 @@
 
 import os
 import numpy as np
-from mtcnn import MTCNN
+#from mtcnn import MTCNN
 import cv2
 from PIL import Image, ImageEnhance,ImageDraw, ImageFont
 
-def find_faces(names:list, mtcnn_detector, margin = 0.3,dimensions: tuple = (256,256,3),conf_thresh:float = 0.98):
+def find_faces(names, mtcnn_detector, margin = 0.3,dimensions: tuple = (256,256,3),conf_thresh:float = 0.98):
     """
     names : input image we want to perform face detection on. Shout be of the format:
             dirname + image_name
@@ -52,22 +52,23 @@ def find_faces(names:list, mtcnn_detector, margin = 0.3,dimensions: tuple = (256
                     conf.append(face['confidence'])
             i = 0
             faces_in_each = []
-
+            if not faces:
+                continue
             for x,y,w,h in faces:
+                #Crop face that satisfy our threshold
                 cropped = pil_img.crop((x-margin*w,y-margin*h,x+w+margin*w,y+h+margin*h)).resize((width,height))
+                #Sho confidence level as a text
                 d = ImageDraw.Draw(cropped)
                 s = str('Confidence level: ' + str(conf[i]))
                 d.text((30,30), s, fill=(255,255,0))
+                # add all cropped faces into a list
                 faces_in_each.append(cropped)
                 i+=1
-                #modifying local data structure in each iteration to sotre PIL Image of each face
-                #display((pil_img.crop((x,y,x+w,y+h))).resize((110,110)))
 
                 contact_sheet = Image.new(pil_img.mode, (width*num_faces,height*int(np.ceil(len(faces_in_each)/num_faces))))
                 #contact sheet modification to display each iteration's result
                 x = 0
                 y = 0
-
                 for face in faces_in_each:
                     face.thumbnail((width,height))
                     contact_sheet.paste(face, (x, y))
@@ -76,13 +77,6 @@ def find_faces(names:list, mtcnn_detector, margin = 0.3,dimensions: tuple = (256
                         y=y+height
                     else:
                         x=x+width
-            print('The dimensions of the original image: ')
-            print('width:',pil_img.size[0], '  height:',pil_img.size[1])
-
-            if num_faces>1:
-                display((pil_img).resize((width*num_faces-1,width*num_faces-1)))
-            else:
-                display((pil_img).resize((width*num_faces,width*num_faces)))
             contact_sheets.append(contact_sheet)
         return contact_sheets
     else:
@@ -107,11 +101,7 @@ def find_faces(names:list, mtcnn_detector, margin = 0.3,dimensions: tuple = (256
             d.text((30,30), s, fill=(255,255,0))
             faces_in_each.append(cropped)
             i+=1
-            #modifying local data structure in each iteration to sotre PIL Image of each face
-            #display((pil_img.crop((x,y,x+w,y+h))).resize((110,110)))
-
             contact_sheet = Image.new(pil_img.mode, (width*num_faces,height*int(np.ceil(len(faces_in_each)/num_faces))))
-            #contact sheet modification to display each iteration's result
             x = 0
             y = 0
 
@@ -123,10 +113,4 @@ def find_faces(names:list, mtcnn_detector, margin = 0.3,dimensions: tuple = (256
                     y=y+height
                 else:
                     x=x+width
-        print('The dimensions of the original image: ')
-        print('width:',pil_img.size[0], '  height:',pil_img.size[1])
-        if num_faces>1:
-            display((pil_img).resize((width*num_faces-1,width*num_faces-1)))
-        else:
-            display((pil_img).resize((width*num_faces,width*num_faces)))
         return contact_sheet
