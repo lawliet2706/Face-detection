@@ -1,7 +1,6 @@
 import cv2
 from facedetection import find_faces
 from mtcnn import MTCNN
-from PIL import Image, ImageEnhance,ImageDraw, ImageFont
 
 detector = MTCNN()
 
