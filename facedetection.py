@@ -6,7 +6,7 @@ import numpy as np
 import cv2
 from PIL import Image, ImageEnhance,ImageDraw, ImageFont
 
-def find_faces(names, mtcnn_detector, margin = 0.3,dimensions: tuple = (256,256,3),conf_thresh:float = 0.98):
+def find_faces(names, mtcnn_detector, margin = 0.3,dimensions: tuple = (256,256,3)):
     """
     names : input image we want to perform face detection on. Shout be of the format:
             dirname + image_name
@@ -44,14 +44,13 @@ def find_faces(names, mtcnn_detector, margin = 0.3,dimensions: tuple = (256,256,
             boxes = mtcnn_detector.detect_faces(img)
             faces = []
             conf = []
-            thresh = conf_thresh
 
             for face in boxes:
-                if face['confidence'] >=thresh:
-                    faces.append(face['box'])
-                    conf.append(face['confidence'])
+                faces.append(face['box'])
+                conf.append(face['confidence'])
             i = 0
             faces_in_each = []
+
             if not faces:
                 contact_sheets.append(Image.new(pil_img.mode, (width*num_faces,height*int(np.ceil(1/num_faces)))))
                 continue
@@ -70,7 +69,7 @@ def find_faces(names, mtcnn_detector, margin = 0.3,dimensions: tuple = (256,256,
             #contact sheet modification to display each iteration's result
             x = 0
             y = 0
-                
+
             for face in faces_in_each:
                 face.thumbnail((width,height))
                 contact_sheet.paste(face, (x, y))
@@ -89,13 +88,11 @@ def find_faces(names, mtcnn_detector, margin = 0.3,dimensions: tuple = (256,256,
         boxes = mtcnn_detector.detect_faces(img)
         faces = []
         conf = []
-        thresh = conf_thresh
         for face in boxes:
-            if face['confidence'] >=thresh:
-                faces.append(face['box'])
-                conf.append(face['confidence'])
+            faces.append(face['box'])
+            conf.append(face['confidence'])
         if not faces:
-            return Image.new(pil_img.mode, (width*num_faces,height*int(np.ceil(1/num_faces))))    
+            return Image.new(pil_img.mode, (width*num_faces,height*int(np.ceil(1/num_faces))))
         i = 0
         faces_in_each = []
         for x,y,w,h in faces:
