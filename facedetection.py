@@ -35,7 +35,7 @@ def find_faces(names, mtcnn_detector, margin = 0.3,dimensions: tuple = (256,256,
     """
     width,height,num_faces = dimensions
     if type(names) == list:
-        contact_sheets = []
+        list_of_faces = []
         for img_name in names:
             # read the image and convert it from BGR to RGB
             img = cv2.cvtColor(cv2.imread(img_name), cv2.COLOR_BGR2RGB)
@@ -52,8 +52,7 @@ def find_faces(names, mtcnn_detector, margin = 0.3,dimensions: tuple = (256,256,
             faces_in_each = []
 
             if not faces:
-                contact_sheets.append(Image.new(pil_img.mode, (width*num_faces,height*int(np.ceil(1/num_faces)))))
-                continue
+                list_of_faces.append(faces_in_each)
             for x,y,w,h in faces:
                 #Crop face that satisfy our threshold
                 cropped = pil_img.crop((x-margin*w,y-margin*h,x+w+margin*w,y+h+margin*h)).resize((width,height))
@@ -64,23 +63,10 @@ def find_faces(names, mtcnn_detector, margin = 0.3,dimensions: tuple = (256,256,
                 # add all cropped faces into a list
                 faces_in_each.append(cropped)
                 i+=1
-
-            contact_sheet = Image.new(pil_img.mode, (width*num_faces,height*int(np.ceil(len(faces_in_each)/num_faces))))
-            #contact sheet modification to display each iteration's result
-            x = 0
-            y = 0
-
-            for face in faces_in_each:
-                face.thumbnail((width,height))
-                contact_sheet.paste(face, (x, y))
-                if x+width == contact_sheet.width:
-                    x=0
-                    y=y+height
-                else:
-                    x=x+width
-            contact_sheets.append(contact_sheet)
-        return contact_sheets
+            list_of_faces.append(faces_in_each)
+        return list_of_faces
     else:
+        list_of_faces = []
         # read the image and convert it from BGR to RGB
         img = cv2.cvtColor(cv2.imread(names), cv2.COLOR_BGR2RGB)
         pil_img=Image.fromarray(img)
@@ -91,10 +77,10 @@ def find_faces(names, mtcnn_detector, margin = 0.3,dimensions: tuple = (256,256,
         for face in boxes:
             faces.append(face['box'])
             conf.append(face['confidence'])
-        if not faces:
-            return Image.new(pil_img.mode, (width*num_faces,height*int(np.ceil(1/num_faces))))
-        i = 0
         faces_in_each = []
+        if not faces:
+            list_of_faces.append(faces_in_each)
+        i = 0
         for x,y,w,h in faces:
             cropped = pil_img.crop((x-margin*w,y-margin*h,x+w+margin*w,y+h+margin*h)).resize((width,height))
             d = ImageDraw.Draw(cropped)
@@ -105,13 +91,5 @@ def find_faces(names, mtcnn_detector, margin = 0.3,dimensions: tuple = (256,256,
             contact_sheet = Image.new(pil_img.mode, (width*num_faces,height*int(np.ceil(len(faces_in_each)/num_faces))))
             x = 0
             y = 0
-
-            for face in faces_in_each:
-                face.thumbnail((width,height))
-                contact_sheet.paste(face, (x, y))
-                if x+width == contact_sheet.width:
-                    x=0
-                    y=y+height
-                else:
-                    x=x+width
-        return contact_sheet
+        list_of_faces.append(faces_in_each)
+        return list_of_faces
